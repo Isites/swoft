@@ -1,0 +1,36 @@
+{
+    "name": "grace/swoft",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoft",
+        "Annotation Routing",
+        "AOP"
+    ],
+    "authors": [
+        {
+            "name": "wxu",
+            "email": "23shuaixw@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4" : {
+            "Grace\\Swoft\\" : "src"
+        },
+        "files": [
+            "src/Helper/Functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "test\\": "test/cases"
+        }
+    },
+    "require": {
+        "php": ">=5.5",
+        "doctrine/annotations": "^1.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.1"
+    }
+}
