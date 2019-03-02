@@ -202,4 +202,19 @@ class ObjectDefinition
     {
         $this->methodInjections = $methodInjections;
     }
+    
+    /**
+     * 魔术方法， 导成php文件是可用
+     */
+    public static function __set_state($arr) {
+        $obj = new ObjectDefinition();
+        foreach($arr as $key => $val) {
+            if(method_exists($obj, "set" . ucfirst($key))) {
+                $method = "set" . ucfirst($key);
+                $obj->$method($val);
+            }
+        }
+        return $obj;
+    }
+    
 }

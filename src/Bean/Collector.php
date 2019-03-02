@@ -10,6 +10,7 @@ use Grace\Swoft\Bean\Annotation\Custom;
  */
 class Collector implements CollectorInterface
 {
+    const KEY = 'Annotation_Collector';
     /**
      * The annotations of method
      *
@@ -28,6 +29,18 @@ class Collector implements CollectorInterface
             self::$methodAnnotations[$className][$methodName] = array();
         }
         self::$methodAnnotations[$className][$methodName][] = get_class($objectAnnotation);
+    }
+
+    /**
+     * @param array $data
+     * @return boolean
+     */
+    public static function init($data) {
+        if(is_array($data) && isset($data[self::KEY])) {
+            self::$methodAnnotations = $data[self::KEY];
+            return true;
+        }
+        return false;
     }
 
     /**

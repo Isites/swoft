@@ -24,6 +24,12 @@ interface CollectorInterface
     );
 
     /**
+     * @param array $data
+     * @return boolean
+     */
+    public static function init($data);
+
+    /**
      * @return mixed
      */
     public static function getCollector();

@@ -39,6 +39,15 @@ class MiddlewareCollector implements CollectorInterface
     }
 
     /**
+     * 暂时未做对中间件的支持
+     * @param array $data
+     * @return boolean
+     */
+    public static function init($data) {
+        return false;
+    }
+
+    /**
      * @return array
      */
     public static function getCollector()

@@ -13,7 +13,8 @@ BeanFactory::init([
         'test\controllers',
         'Grace\Swoft\Aop',
         'Grace\Swoft\Route\Router',
-    ]
+    ],
+    'cached' => true,
 ]);
 
 $requestMapping = ControllerCollector::getCollector();

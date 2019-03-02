@@ -24,6 +24,7 @@ use Grace\Swoft\Bean\CollectorInterface;
  */
 class AspectCollector implements CollectorInterface
 {
+    const KEY = 'Aspect_Collector';
     /**
      * @var array
      */
@@ -205,6 +206,18 @@ class AspectCollector implements CollectorInterface
             return null;
         }
         self::$aspects[$className]['advice']['afterReturning'] = [$className, $methodName];
+    }
+
+    /**
+     * @param array $data
+     * @return boolean
+     */
+    public static function init($data) {
+        if(is_array($data) && isset($data[self::KEY])) {
+            self::$aspects = $data[self::KEY];
+            return true;
+        }
+        return false;
     }
 
     /**

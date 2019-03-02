@@ -15,6 +15,9 @@ use Grace\Swoft\Bean\Resource\WorkerAnnotationResource;
 use Grace\Swoft\Proxy\Handler\AopHandler;
 use Grace\Swoft\Proxy\Proxy;
 use Grace\Swoft\Bean\BeanFactory;
+use Grace\Swoft\Bean\Collector;
+use Grace\Swoft\Route\Bean\Collector\ControllerCollector;
+use Grace\Swoft\Bean\Collector\AspectCollector;
 
 /**
  * 全局容器
@@ -53,6 +56,17 @@ class Container
      * @var string
      */
     private $initMethod = 'init';
+
+    private $cacheCollector = [
+        Collector::class,
+        ControllerCollector::class,
+        AspectCollector::class,
+    ];
+
+    /**
+     * 缓存注解的cache key
+     */
+    private $cacheKey = 'Object_Definition';
 
     /**
      * 获取一个bean
@@ -109,12 +123,80 @@ class Container
      */
     public function autoloadServerAnnotation()
     {
+        if($this->loadCacheAnnotation()) {
+            return;
+        }
+        $this->loadAnnotationAndCache();
+    }
+
+    /**
+     * 如果存在cache 并且cache 正确, 直接从cache 获取结果
+     */
+    private function loadCacheAnnotation() {
+        $isCache = isset($this->properties['cached']) && $this->properties['cached'] === true;
+        $reloadCache = isset($this->properties['reload_cache']) && $this->properties['reload_cache'] === true;
+        if(!$isCache || $reloadCache) {
+            return false;
+        }
+        $file =  BASE_PATH . DS . ".cache" .  DS . "swoft_annotation_cached.php";
+        if(!file_exists($file)) {
+            return false;
+        }
+        $cachedData = include $file;
+        if(empty($cachedData) || empty($cachedData["cacheRes"]) || $cachedData["cacheRes"] !== true) {
+            return false;
+        }
+        $res = isset($cachedData[$this->cacheKey]);
+        if($res) {
+            $this->definitions = $cachedData[$this->cacheKey];
+        }
+        foreach($this->cacheCollector as $collectorCls) {
+            $res = $res && $collectorCls::init($cachedData);
+        }
+        return $res;
+    }
+
+    /**
+     * 将扫描的注解信息缓存起来
+     */
+    private function loadAnnotationAndCache() {
+        $isCache = isset($this->properties['cached']) && $this->properties['cached'] === true;
+        $definitions = $this->_autoloadServerAnnotation();
+        $this->definitions = array_merge($definitions, $this->definitions);
+        if($isCache) {
+            $cacheData = [
+                "cacheRes" => true,
+            ];
+            $cacheData[$this->cacheKey] = $this->definitions;
+            foreach($this->cacheCollector as $collectorCls) {
+                $cacheData[$collectorCls::KEY] = $collectorCls::getCollector();
+            }
+            $cacheData = 'return ' . var_export($cacheData, true);
+            $content = "<?php\n" . $cacheData . ";\n";
+            $content = str_replace('\\\\\\\'', '\\\'', $content);
+            $targetDir = BASE_PATH . DS . ".cache";
+            $file = $targetDir .  DS . "swoft_annotation_cached.php";
+            if(!file_exists($targetDir)) {
+                @mkdir($targetDir, 0755, true);
+            }
+            if(file_exists($targetDir)) {
+                $filetmp = $file . ".tmp";
+                $rs = file_put_contents($filetmp, $content);
+                if($rs !== false){
+                    rename($filetmp, $file);
+                }
+            }
+        }
+    }
+
+    /**
+     * Register the annotation of server
+     */
+    private function _autoloadServerAnnotation() {
         $bootScan = $this->getScanNamespaceFromProperties('bootScan');
         $resource = new ServerAnnotationResource($this->properties);
         $resource->addScanNamespace($bootScan);
-        $definitions = $resource->getDefinitions();
-
-        $this->definitions = array_merge($definitions, $this->definitions);
+        return $resource->getDefinitions();
     }
 
     /**

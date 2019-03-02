@@ -14,6 +14,7 @@ use Grace\Swoft\Route\Bean\Annotation\RequestMethod;
  */
 class ControllerCollector implements CollectorInterface
 {
+    const KEY = 'Route_Collector';
     /**
      * @var array
      */
@@ -59,6 +60,18 @@ class ControllerCollector implements CollectorInterface
             ];
             return;
         }
+    }
+
+    /**
+     * @param array $data
+     * @return boolean
+     */
+    public static function init($data) {
+        if(is_array($data) && isset($data[self::KEY])) {
+            self::$requestMapping = $data[self::KEY];
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -11,7 +11,9 @@ BeanFactory::init([
     'bootScan' => [
         'test\\',
         'Grace\Swoft\Aop',
-    ]
+    ],
+    'cached' => true,
+    "reload_cache" => true,
 ]);
 
 $bean = BeanFactory::getBean("aopTest");
