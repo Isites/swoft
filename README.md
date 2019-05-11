@@ -9,6 +9,7 @@
 1. composer 配置
 
 ```json
+"minimum-stability": "dev",
 "repositories": [
     {
         "type": "vcs",
@@ -17,7 +18,7 @@
 ]
 ```
 
-2. 步骤**1**执行完后, 请执`composer istall`
+2. 步骤**1**执行完后, 请执`composer require grace/swoft`
 
 ## 使用
 
