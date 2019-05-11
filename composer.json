@@ -1,6 +1,7 @@
 {
     "name": "grace/swoft",
     "type": "library",
+    "description": "一个aop的注解路由的轻量级mvc框架",
     "keywords": [
         "php",
         "swoft",
