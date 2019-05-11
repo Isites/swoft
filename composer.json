@@ -14,6 +14,8 @@
             "email": "23shuaixw@gmail.com"
         }
     ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4" : {
             "Grace\\Swoft\\" : "src"
