@@ -34,7 +34,7 @@ class App {
             ],
         ], $options);
         $conf['bootScan'] = array_merge($conf['bootScan'], $scans);
-        $conf = array_unique($conf['bootScan']);
+        $conf['bootScan'] = array_unique($conf['bootScan']);
         //初始化注解相关
         BeanFactory::init($conf);
         $controllerPath = isset($conf['CONTROLLER_PATH']) ? $conf['CONTROLLER_PATH'] : $_SERVER['REQUEST_URI'];
@@ -43,7 +43,7 @@ class App {
     }
 
     public static function add($middleware) {
-        if($middleware instanceof Middleware) {
+        if(!($middleware instanceof Middleware)) {
             throw new \Exception("middleware must be instanceof Middleware");
         }
         if(self::$firstMiddleware === null) {
@@ -55,7 +55,7 @@ class App {
     }
 
     public static function run() {
-        if(self::$firstMiddleware !== null) {
+        if(self::$firstMiddleware === null) {
             return;
         }
         $response = self::$firstMiddleware->call();
